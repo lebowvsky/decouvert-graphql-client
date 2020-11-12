@@ -1,24 +1,40 @@
-import logo from './logo.svg';
+
 import './App.css';
+import { ApolloProvider, ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import LaunchesCpnt from './components/LaunchesCpnt';
+
+const client = new ApolloClient({
+  uri: "https://api.spacex.land/graphql/",
+  cache: new InMemoryCache(),
+});
+
+client
+  .query({
+    query: gql`
+      query GetRates {
+        launches(limit: 5) {
+          launch_date_utc
+          launch_success
+          rocket {
+            rocket_name
+          }
+          details
+          links {
+            video_link
+          }
+        }
+      }
+    `,
+  })
+  .then((result) => console.log(result));
 
 function App() {
   return (
+    <ApolloProvider client={client}>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <LaunchesCpnt />
     </div>
+    </ApolloProvider>
   );
 }
 
